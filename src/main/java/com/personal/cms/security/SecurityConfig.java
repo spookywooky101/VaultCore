@@ -50,25 +50,27 @@ public class SecurityConfig {
 
     @Bean
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
-        org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
-        
-        // Split comma-separated origins from property
-        java.util.List<String> origins = java.util.stream.Stream.of(allowedOriginsProp.split(","))
-                .map(String::trim)
-                .collect(java.util.stream.Collectors.toList());
-        
-        // Also ensure localhost is always allowed for easy local development
-        if (!origins.contains("http://localhost:5173")) origins.add("http://localhost:5173");
-        if (!origins.contains("http://127.0.0.1:5173")) origins.add("http://127.0.0.1:5173");
-        
-        configuration.setAllowedOrigins(origins);
-        configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(java.util.List.of("Authorization", "Cache-Control", "Content-Type"));
-        configuration.setExposedHeaders(java.util.List.of("Authorization"));
-        configuration.setAllowCredentials(true);
-        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+        return request -> {
+            String origin = request.getHeader("Origin");
+            org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+            
+            // Dynamically allow the origin if it is localhost or a Vercel deployment
+            if (origin != null && (origin.contains("localhost") || origin.contains("127.0.0.1") || origin.endsWith(".vercel.app") || origin.endsWith("vercel.app"))) {
+                configuration.setAllowedOrigins(java.util.List.of(origin));
+            } else {
+                // Fallback to configured origins from properties
+                java.util.List<String> origins = java.util.stream.Stream.of(allowedOriginsProp.split(","))
+                        .map(String::trim)
+                        .collect(java.util.stream.Collectors.toList());
+                configuration.setAllowedOrigins(origins);
+            }
+            
+            configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            configuration.setAllowedHeaders(java.util.List.of("Authorization", "Cache-Control", "Content-Type"));
+            configuration.setExposedHeaders(java.util.List.of("Authorization"));
+            configuration.setAllowCredentials(true);
+            return configuration;
+        };
     }
 
     @Bean
