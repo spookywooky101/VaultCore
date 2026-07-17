@@ -45,10 +45,23 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins:http://localhost:5173}")
+    private String allowedOriginsProp;
+
     @Bean
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
-        configuration.setAllowedOrigins(java.util.List.of("http://localhost:5173", "http://127.0.0.1:5173"));
+        
+        // Split comma-separated origins from property
+        java.util.List<String> origins = java.util.stream.Stream.of(allowedOriginsProp.split(","))
+                .map(String::trim)
+                .collect(java.util.stream.Collectors.toList());
+        
+        // Also ensure localhost is always allowed for easy local development
+        if (!origins.contains("http://localhost:5173")) origins.add("http://localhost:5173");
+        if (!origins.contains("http://127.0.0.1:5173")) origins.add("http://127.0.0.1:5173");
+        
+        configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(java.util.List.of("Authorization", "Cache-Control", "Content-Type"));
         configuration.setExposedHeaders(java.util.List.of("Authorization"));
