@@ -1,0 +1,55 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# ─── ValutCore specific ───────────────────────────
+
+# Secrets: application.properties contains Cloudinary API keys — NEVER commit!
+src/main/resources/application.properties
+
+# Local H2 database files (your data lives here locally)
+data/
+
+# Uploaded files (now stored on Cloudinary, not needed in git)
+uploads/
+
+# Frontend secrets and build output
+frontend/.env.local
+frontend/.env.*.local
+frontend/dist/
+frontend/node_modules/
+node_modules/
+
+# Logs
+*.log
+logs/
