@@ -959,6 +959,9 @@ function App() {
           <div className="empty-state">
             <RefreshCw className="empty-state-icon animate-spin" size={48} />
             <div className="empty-state-title">Loading assets...</div>
+            <p className="empty-state-desc" style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-muted)' }}>
+              Starting up cloud server (takes ~30-45s on Render free tier)...
+            </p>
           </div>
         ) : assets.length === 0 ? (
           <div className="empty-state">
